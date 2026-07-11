@@ -5,6 +5,7 @@ import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
 import { Loader2, Users, Calendar } from "lucide-react";
 import { useState } from "react";
+import { showSuccess, showError } from "@/lib/toast";
 
 export default function Onboarding() {
   const { user } = useAuth();
@@ -16,9 +17,11 @@ export default function Onboarding() {
     setSelectedRole(role);
     try {
       await setRoleMutation.mutateAsync(role);
+      showSuccess(`Welcome! You're set up as a ${role}`);
       navigate("/");
     } catch (error) {
       console.error("Failed to set role:", error);
+      showError("Failed to set up your role. Please try again.");
       setSelectedRole(null);
     }
   };

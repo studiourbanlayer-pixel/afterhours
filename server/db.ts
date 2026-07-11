@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, profiles, listings, bookings, InsertProfile, InsertListing, InsertBooking } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +89,89 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+// Profile queries
+export async function getOrCreateProfile(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const existing = await db.select().from(profiles).where(eq(profiles.userId, userId)).limit(1);
+  if (existing.length > 0) return existing[0];
+  
+  await db.insert(profiles).values({ userId });
+  const created = await db.select().from(profiles).where(eq(profiles.userId, userId)).limit(1);
+  return created[0];
+}
+
+export async function updateProfile(userId: number, data: Partial<InsertProfile>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(profiles).set(data).where(eq(profiles.userId, userId));
+}
+
+// Listing queries
+export async function createListing(data: InsertListing) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(listings).values(data);
+  const created = await db.select().from(listings).where(eq(listings.hostId, data.hostId)).orderBy((t) => t.id).limit(1);
+  return created[0];
+}
+
+export async function getListingById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(listings).where(eq(listings.id, id)).limit(1);
+  return result[0];
+}
+
+export async function getActiveListings() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(listings).where(eq(listings.status, "active"));
+}
+
+export async function getHostListings(hostId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(listings).where(eq(listings.hostId, hostId));
+}
+
+export async function updateListing(id: number, data: Partial<InsertListing>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(listings).set(data).where(eq(listings.id, id));
+}
+
+// Booking queries
+export async function createBooking(data: InsertBooking) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(bookings).values(data);
+  const created = await db.select().from(bookings).where(eq(bookings.guestId, data.guestId)).orderBy((t) => t.id).limit(1);
+  return created[0];
+}
+
+export async function getBookingById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(bookings).where(eq(bookings.id, id)).limit(1);
+  return result[0];
+}
+
+export async function getGuestBookings(guestId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(bookings).where(eq(bookings.guestId, guestId));
+}
+
+export async function getListingBookings(listingId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(bookings).where(eq(bookings.listingId, listingId));
+}
+
+export async function updateBooking(id: number, data: Partial<InsertBooking>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(bookings).set(data).where(eq(bookings.id, id));
+}

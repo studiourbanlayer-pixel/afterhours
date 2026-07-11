@@ -18,8 +18,8 @@
 
 ## Host Features
 - [x] Create listing form (title, description, venue, date, capacity, price)
-- [ ] S3 image upload integration (form accepts URL only for MVP)
-- [ ] Edit listing form
+- [ ] S3 image upload integration (Phase 2 - form accepts URL only for MVP)
+- [ ] Edit listing form (Phase 2)
 - [x] Soft-delete/cancel listing (status field)
 - [x] Host dashboard with booking counts, revenue, event dates
 - [x] Host analytics: aggregated revenue and booking stats
@@ -30,6 +30,7 @@
 - [x] Listing detail page with full info
 - [x] Sticky "Book Now" CTA on detail page
 - [x] Guest dashboard: list own bookings with event details
+- [ ] Advanced filters (Phase 2 - date range, categories)
 
 ## Booking & Payments
 - [x] Booking form: quantity selection
@@ -53,4 +54,4 @@
 - [x] Responsive layout: bottom tabs (mobile), sidebar nav (desktop 1024px+)
 - [x] Error handling and edge cases (error utilities, toast notifications, validation, error boundaries)
 - [x] Toast notifications wired into: onboarding, create listing, logout, browse page errors
-- [ ] Performance optimization (bundle size, query optimization)
+- [ ] Performance optimization (Phase 2 - bundle size, query optimization)

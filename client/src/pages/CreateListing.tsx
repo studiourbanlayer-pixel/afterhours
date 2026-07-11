@@ -4,13 +4,14 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, ArrowLeft } from "lucide-react";
-import { useState } from "react";
+import { Loader2, ArrowLeft, Upload, X } from "lucide-react";
+import { useState, useRef } from "react";
 import { showSuccess, showError, toastMessages } from "@/lib/toast";
 import { getErrorMessage } from "@/lib/errors";
 
 export default function CreateListing() {
   const [, navigate] = useLocation();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -20,12 +21,65 @@ export default function CreateListing() {
     ticketPrice: "",
     coverImageUrl: "",
   });
+  const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   const createMutation = trpc.listings.create.useMutation();
+  const uploadImageMutation = trpc.listings.uploadCoverImage.useMutation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      showError("Please select an image file");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      showError("Image must be smaller than 5MB");
+      return;
+    }
+
+    try {
+      setIsUploadingImage(true);
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const imageData = event.target?.result as string;
+        const base64Data = imageData.split(",")[1];
+
+        const result = await uploadImageMutation.mutateAsync({
+          fileName: file.name,
+          fileData: base64Data,
+          mimeType: file.type,
+        });
+
+        setFormData((prev) => ({ ...prev, coverImageUrl: result.url }));
+        setCoverImagePreview(result.url);
+        showSuccess("Image uploaded successfully");
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      showError("Failed to upload image");
+      console.error(error);
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setFormData((prev) => ({ ...prev, coverImageUrl: "" }));
+    setCoverImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -176,18 +230,52 @@ export default function CreateListing() {
               </div>
             </div>
 
-            {/* Cover Image URL */}
+            {/* Cover Image Upload */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Cover Image URL
+                Cover Image
               </label>
-              <Input
-                name="coverImageUrl"
-                value={formData.coverImageUrl}
-                onChange={handleChange}
-                placeholder="https://example.com/image.jpg"
-                type="url"
+              {coverImagePreview ? (
+                <div className="relative">
+                  <img
+                    src={coverImagePreview}
+                    alt="Cover preview"
+                    className="w-full h-48 object-cover rounded-lg"
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    onClick={handleRemoveImage}
+                    className="absolute top-2 right-2"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              ) : (
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-blue-500 transition-colors"
+                >
+                  <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                  <p className="text-gray-600">Click to upload or drag and drop</p>
+                  <p className="text-sm text-gray-500">PNG, JPG, GIF up to 5MB</p>
+                </div>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={isUploadingImage}
+                className="hidden"
               />
+              {isUploadingImage && (
+                <div className="mt-2 flex items-center gap-2 text-sm text-gray-600">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Uploading image...
+                </div>
+              )}
             </div>
 
             {/* Submit */}

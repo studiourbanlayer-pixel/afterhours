@@ -6,6 +6,7 @@ import { getOrCreateProfile, updateProfile, createListing, getListingById, getAc
 import { getHostListingStats, getGuestBookingDetails } from "./db.analytics";
 import { z } from "zod";
 import Stripe from "stripe";
+import { storagePut } from "./storage";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
 
@@ -75,6 +76,23 @@ export const appRouter = router({
         }
         await updateListing(id, data);
         return { success: true };
+      }),
+    uploadCoverImage: protectedProcedure
+      .input(z.object({
+        fileName: z.string(),
+        fileData: z.string(),
+        mimeType: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        try {
+          const buffer = Buffer.from(input.fileData, "base64");
+          const fileKey = `listings/${ctx.user.id}/${Date.now()}-${input.fileName}`;
+          const { url } = await storagePut(fileKey, buffer, input.mimeType);
+          return { url };
+        } catch (error) {
+          console.error("Image upload failed:", error);
+          throw new Error("Failed to upload image");
+        }
       }),
     cancel: protectedProcedure.input(z.number()).mutation(async ({ ctx, input }) => {
       const listing = await getListingById(input);

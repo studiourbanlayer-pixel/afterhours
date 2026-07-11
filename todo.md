@@ -48,7 +48,8 @@
 - [x] Profile page with logout
 
 ## Polish & Testing
-- [ ] Vitest unit tests for core procedures
-- [ ] Visual verification across mobile/desktop
+- [x] Vitest unit tests for core procedures (19/19 passing - auth, listings, profile, bookings, payment, analytics)
+- [x] Visual verification across mobile/desktop (mobile 375x812 and desktop 1280x720 verified)
+- [x] Responsive layout: bottom tabs (mobile), sidebar nav (desktop 1024px+)
 - [ ] Error handling and edge cases
 - [ ] Performance optimization

@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, ArrowLeft } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { showSuccess, showError, toastMessages } from "@/lib/toast";
+import { getErrorMessage } from "@/lib/errors";
 
 export default function CreateListing() {
   const [, navigate] = useLocation();
@@ -31,7 +32,20 @@ export default function CreateListing() {
     e.preventDefault();
 
     if (!formData.title || !formData.eventDate || !formData.capacity || !formData.ticketPrice) {
-      toast.error("Please fill in all required fields");
+      showError("Please fill in all required fields");
+      return;
+    }
+
+    const capacity = parseInt(formData.capacity);
+    const price = parseFloat(formData.ticketPrice);
+
+    if (capacity < 1) {
+      showError("Capacity must be at least 1");
+      return;
+    }
+
+    if (price < 0.01) {
+      showError("Ticket price must be at least $0.01");
       return;
     }
 
@@ -41,15 +55,15 @@ export default function CreateListing() {
         description: formData.description || undefined,
         venueAddress: formData.venueAddress || undefined,
         eventDate: new Date(formData.eventDate),
-        capacity: parseInt(formData.capacity),
-        ticketPriceCents: Math.round(parseFloat(formData.ticketPrice) * 100),
+        capacity,
+        ticketPriceCents: Math.round(price * 100),
         coverImageUrl: formData.coverImageUrl || undefined,
       });
 
-      toast.success("Event created successfully!");
+      showSuccess(toastMessages.listingCreated);
       navigate("/dashboard");
     } catch (error) {
-      toast.error("Failed to create event");
+      showError(getErrorMessage(error));
       console.error(error);
     }
   };

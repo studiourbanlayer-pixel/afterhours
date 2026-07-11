@@ -51,5 +51,6 @@
 - [x] Vitest unit tests for core procedures (19/19 passing - auth, listings, profile, bookings, payment, analytics)
 - [x] Visual verification across mobile/desktop (mobile 375x812 and desktop 1280x720 verified)
 - [x] Responsive layout: bottom tabs (mobile), sidebar nav (desktop 1024px+)
-- [ ] Error handling and edge cases
-- [ ] Performance optimization
+- [x] Error handling and edge cases (error utilities, toast notifications, validation, error boundaries)
+- [x] Toast notifications wired into: onboarding, create listing, logout, browse page errors
+- [ ] Performance optimization (bundle size, query optimization)

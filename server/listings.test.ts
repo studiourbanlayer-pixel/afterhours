@@ -70,7 +70,7 @@ describe("profile procedures", () => {
     const ctx = createMockContext();
     const caller = appRouter.createCaller(ctx);
 
-    const result = await caller.profile.updateRole({ platformRole: "host" });
+    const result = await caller.profile.setRole("host");
     expect(result).toBeDefined();
   });
 
@@ -80,7 +80,7 @@ describe("profile procedures", () => {
     const caller = appRouter.createCaller(ctx);
 
     try {
-      await caller.profile.updateRole({ platformRole: "host" });
+      await caller.profile.setRole("host");
       expect.fail("Should have thrown error");
     } catch (error: any) {
       expect(error.code).toBe("UNAUTHORIZED");

@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { LogOut, User, Mail } from "lucide-react";
+import { showSuccess } from "@/lib/toast";
 
 export default function ProfilePage() {
   const { user, logout } = useAuth();
@@ -10,6 +11,7 @@ export default function ProfilePage() {
 
   const handleLogout = () => {
     logout();
+    showSuccess("You've been logged out");
     navigate("/");
   };
 

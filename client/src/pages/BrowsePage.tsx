@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, Calendar, MapPin, Users } from "lucide-react";
+import { Loader2, Calendar, MapPin, Users, AlertCircle } from "lucide-react";
 import { useState } from "react";
 
 export default function BrowsePage() {
@@ -16,6 +16,18 @@ export default function BrowsePage() {
     listing.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     listing.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (listingsQuery.error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
+          <p className="text-gray-600 mb-4">Failed to load events</p>
+          <Button onClick={() => window.location.reload()}>Try Again</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

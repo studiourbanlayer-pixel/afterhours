@@ -7,6 +7,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import ListingDetail from "./pages/ListingDetail";
 import CreateListing from "./pages/CreateListing";
+import EditListing from "./pages/EditListing";
 import ProfilePage from "./pages/ProfilePage";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -111,6 +112,7 @@ function Router() {
           <Route path={"/dashboard"} component={Home} />
           <Route path={"/listings/:id"} component={({ params }) => <ListingDetail id={parseInt(params.id)} />} />
           <Route path={"/create-listing"} component={CreateListing} />
+          <Route path={"/edit-listing/:id"} component={({ params }) => <EditListing id={parseInt(params.id)} />} />
           <Route path={"/profile"} component={ProfilePage} />
           <Route path={"/404"} component={NotFound} />
           {/* Final fallback route */}

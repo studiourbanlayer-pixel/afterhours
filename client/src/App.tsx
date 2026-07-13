@@ -9,6 +9,8 @@ import ListingDetail from "./pages/ListingDetail";
 import CreateListing from "./pages/CreateListing";
 import EditListing from "./pages/EditListing";
 import ProfilePage from "./pages/ProfilePage";
+import LoginPage from "./pages/LoginPage";
+import RoleSelectionPage from "./pages/RoleSelectionPage";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { LogOut, Home as HomeIcon, LayoutGrid, User } from "lucide-react";
@@ -81,18 +83,23 @@ function NavigationBar() {
           <HomeIcon className="w-5 h-5" />
           Dashboard
         </Button>
+        <Button
+          variant={location === "/profile" ? "default" : "ghost"}
+          className="w-full justify-start gap-2"
+          onClick={() => navigate("/profile")}
+        >
+          <User className="w-5 h-5" />
+          Profile
+        </Button>
       </nav>
-      <div className="p-4 border-t space-y-2">
-        <div className="text-sm text-gray-600 px-2 py-2">
-          {user.name || user.email}
-        </div>
+      <div className="p-4 border-t">
         <Button
           variant="outline"
-          className="w-full justify-start gap-2"
-          onClick={() => logout()}
+          className="w-full justify-start gap-2 text-red-600 hover:text-red-700"
+          onClick={logout}
         >
           <LogOut className="w-5 h-5" />
-          Logout
+          Sign Out
         </Button>
       </div>
     </div>
@@ -100,8 +107,20 @@ function NavigationBar() {
 }
 
 function Router() {
+  const { user, loading } = useAuth();
   const isMobile = useIsMobile();
   const mainContentClass = isMobile ? "pb-20" : "ml-64";
+
+  // Show login page if not authenticated
+  if (!loading && !user) {
+    return (
+      <Switch>
+        <Route path={"/login"} component={LoginPage} />
+        <Route path={"/role-selection"} component={RoleSelectionPage} />
+        <Route component={LoginPage} />
+      </Switch>
+    );
+  }
 
   return (
     <div className="flex">

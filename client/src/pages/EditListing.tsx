@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, ArrowLeft, Upload, X } from "lucide-react";
+import { Loader2, ArrowLeft, Upload, X, AlertCircle } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { showSuccess, showError, toastMessages } from "@/lib/toast";
 import { getErrorMessage } from "@/lib/errors";
@@ -12,6 +12,7 @@ import { getErrorMessage } from "@/lib/errors";
 export default function EditListing({ id }: { id: number }) {
   const [, navigate] = useLocation();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [dragActive, setDragActive] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -24,7 +25,7 @@ export default function EditListing({ id }: { id: number }) {
   const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
 
-  const { data: listing, isLoading: isLoadingListing } = trpc.listings.getById.useQuery(id);
+  const { data: listing, isLoading: isLoadingListing, error: listingError } = trpc.listings.getById.useQuery(id);
   const updateMutation = trpc.listings.update.useMutation();
   const uploadImageMutation = trpc.listings.uploadCoverImage.useMutation();
 
@@ -50,10 +51,7 @@ export default function EditListing({ id }: { id: number }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const processImageFile = async (file: File) => {
     if (!file.type.startsWith("image/")) {
       showError("Please select an image file");
       return;
@@ -67,26 +65,66 @@ export default function EditListing({ id }: { id: number }) {
     try {
       setIsUploadingImage(true);
       const reader = new FileReader();
+
       reader.onload = async (event) => {
-        const imageData = event.target?.result as string;
-        const base64Data = imageData.split(",")[1];
+        try {
+          const imageData = event.target?.result as string;
+          const base64Data = imageData.split(",")[1];
 
-        const result = await uploadImageMutation.mutateAsync({
-          fileName: file.name,
-          fileData: base64Data,
-          mimeType: file.type,
-        });
+          const result = await uploadImageMutation.mutateAsync({
+            fileName: file.name,
+            fileData: base64Data,
+            mimeType: file.type,
+          });
 
-        setFormData((prev) => ({ ...prev, coverImageUrl: result.url }));
-        setCoverImagePreview(result.url);
-        showSuccess("Image uploaded successfully");
+          setFormData((prev) => ({ ...prev, coverImageUrl: result.url }));
+          setCoverImagePreview(result.url);
+          showSuccess("Image uploaded successfully");
+        } catch (error) {
+          showError("Failed to upload image");
+          console.error(error);
+        } finally {
+          setIsUploadingImage(false);
+        }
       };
+
+      reader.onerror = () => {
+        showError("Failed to read image file");
+        setIsUploadingImage(false);
+      };
+
       reader.readAsDataURL(file);
     } catch (error) {
-      showError("Failed to upload image");
+      showError("Failed to process image");
       console.error(error);
-    } finally {
       setIsUploadingImage(false);
+    }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await processImageFile(file);
+  };
+
+  const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    const files = e.dataTransfer.files;
+    if (files && files[0]) {
+      await processImageFile(files[0]);
     }
   };
 
@@ -139,10 +177,29 @@ export default function EditListing({ id }: { id: number }) {
     }
   };
 
+  // Loading state
   if (isLoadingListing) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
+
+  // Error state - listing not found or unauthorized
+  if (listingError || !listing) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Card className="p-8 max-w-md">
+          <div className="text-center">
+            <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">Event Not Found</h2>
+            <p className="text-gray-600 mb-6">
+              {listingError ? "Failed to load event" : "This event does not exist or you don't have permission to edit it"}
+            </p>
+            <Button onClick={() => navigate("/dashboard")}>Back to Dashboard</Button>
+          </div>
+        </Card>
       </div>
     );
   }
@@ -272,6 +329,7 @@ export default function EditListing({ id }: { id: number }) {
                     variant="destructive"
                     size="sm"
                     onClick={handleRemoveImage}
+                    disabled={isUploadingImage}
                     className="absolute top-2 right-2"
                   >
                     <X className="w-4 h-4" />
@@ -279,11 +337,23 @@ export default function EditListing({ id }: { id: number }) {
                 </div>
               ) : (
                 <div
+                  onDragEnter={handleDrag}
+                  onDragLeave={handleDrag}
+                  onDragOver={handleDrag}
+                  onDrop={handleDrop}
                   onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-blue-500 transition-colors"
+                  className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+                    dragActive
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-300 hover:border-blue-500"
+                  } ${isUploadingImage ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                   <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-gray-600">Click to upload or drag and drop</p>
+                  <p className="text-gray-600">
+                    {isUploadingImage
+                      ? "Uploading..."
+                      : "Drag and drop your image here, or click to select"}
+                  </p>
                   <p className="text-sm text-gray-500">PNG, JPG, GIF up to 5MB</p>
                 </div>
               )}
@@ -314,7 +384,7 @@ export default function EditListing({ id }: { id: number }) {
               </Button>
               <Button
                 type="submit"
-                disabled={updateMutation.isPending}
+                disabled={updateMutation.isPending || isUploadingImage}
               >
                 {updateMutation.isPending ? (
                   <>

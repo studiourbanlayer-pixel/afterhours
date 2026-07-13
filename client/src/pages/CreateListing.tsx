@@ -12,6 +12,7 @@ import { getErrorMessage } from "@/lib/errors";
 export default function CreateListing() {
   const [, navigate] = useLocation();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [dragActive, setDragActive] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -32,10 +33,7 @@ export default function CreateListing() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const processImageFile = async (file: File) => {
     // Validate file type
     if (!file.type.startsWith("image/")) {
       showError("Please select an image file");
@@ -51,26 +49,66 @@ export default function CreateListing() {
     try {
       setIsUploadingImage(true);
       const reader = new FileReader();
+      
       reader.onload = async (event) => {
-        const imageData = event.target?.result as string;
-        const base64Data = imageData.split(",")[1];
+        try {
+          const imageData = event.target?.result as string;
+          const base64Data = imageData.split(",")[1];
 
-        const result = await uploadImageMutation.mutateAsync({
-          fileName: file.name,
-          fileData: base64Data,
-          mimeType: file.type,
-        });
+          const result = await uploadImageMutation.mutateAsync({
+            fileName: file.name,
+            fileData: base64Data,
+            mimeType: file.type,
+          });
 
-        setFormData((prev) => ({ ...prev, coverImageUrl: result.url }));
-        setCoverImagePreview(result.url);
-        showSuccess("Image uploaded successfully");
+          setFormData((prev) => ({ ...prev, coverImageUrl: result.url }));
+          setCoverImagePreview(result.url);
+          showSuccess("Image uploaded successfully");
+        } catch (error) {
+          showError("Failed to upload image");
+          console.error(error);
+        } finally {
+          setIsUploadingImage(false);
+        }
       };
+
+      reader.onerror = () => {
+        showError("Failed to read image file");
+        setIsUploadingImage(false);
+      };
+
       reader.readAsDataURL(file);
     } catch (error) {
-      showError("Failed to upload image");
+      showError("Failed to process image");
       console.error(error);
-    } finally {
       setIsUploadingImage(false);
+    }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await processImageFile(file);
+  };
+
+  const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    const files = e.dataTransfer.files;
+    if (files && files[0]) {
+      await processImageFile(files[0]);
     }
   };
 
@@ -247,6 +285,7 @@ export default function CreateListing() {
                     variant="destructive"
                     size="sm"
                     onClick={handleRemoveImage}
+                    disabled={isUploadingImage}
                     className="absolute top-2 right-2"
                   >
                     <X className="w-4 h-4" />
@@ -254,11 +293,23 @@ export default function CreateListing() {
                 </div>
               ) : (
                 <div
+                  onDragEnter={handleDrag}
+                  onDragLeave={handleDrag}
+                  onDragOver={handleDrag}
+                  onDrop={handleDrop}
                   onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-blue-500 transition-colors"
+                  className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+                    dragActive
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-300 hover:border-blue-500"
+                  } ${isUploadingImage ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                   <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-gray-600">Click to upload or drag and drop</p>
+                  <p className="text-gray-600">
+                    {isUploadingImage
+                      ? "Uploading..."
+                      : "Drag and drop your image here, or click to select"}
+                  </p>
                   <p className="text-sm text-gray-500">PNG, JPG, GIF up to 5MB</p>
                 </div>
               )}
@@ -289,7 +340,7 @@ export default function CreateListing() {
               </Button>
               <Button
                 type="submit"
-                disabled={createMutation.isPending}
+                disabled={createMutation.isPending || isUploadingImage}
               >
                 {createMutation.isPending ? (
                   <>

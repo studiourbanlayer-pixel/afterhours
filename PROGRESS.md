@@ -1,6 +1,6 @@
 # AfterHours Progress Tracker
 
-**Last Updated:** 2026-07-11 20:30 UTC
+**Last Updated:** 2026-07-14 UTC
 
 ## ✅ Completed Features
 
@@ -9,9 +9,14 @@
 - Role selection on first login (host/guest)
 - Profile creation and role persistence
 - Logout functionality
+- **NEW:** Login page with Manus OAuth
+- **NEW:** Role selection page with Host/Guest UI
+- **FIXED:** Auth routing - RoleSelectionPage now behind auth check
 
 ### Host Features
 - Create listing form (title, description, venue, date, capacity, price)
+- **NEW:** S3 image upload with drag-and-drop UI
+- **NEW:** Edit listing form with full S3 support
 - Listing soft-delete/cancel with status field
 - Host dashboard with listing management
 - Analytics: booking counts, revenue after 10% commission, event dates
@@ -20,6 +25,7 @@
 ### Guest Features
 - Browse page with grid/list layout
 - Free-text search on title and description
+- **NEW:** Advanced filters (date range, max price)
 - Listing detail page with full event information
 - Sticky booking summary (desktop two-column, mobile stacked)
 - Guest dashboard showing all bookings with event details
@@ -48,35 +54,33 @@
 
 ## 🔧 In Progress
 
-- GitHub repository setup (waiting for new token)
+- Prompt 2: Build Host Listing CRUD Flow (after Prompt 1 confirmed)
 - Performance optimization (Phase 2)
 
-## ⏭️ Next Steps (Phase 2)
+## ⏭️ Next Steps
 
-1. **Push to GitHub** - Configure token and push all commits
-2. **S3 Image Upload Integration** - Implement actual file upload instead of URL-only
-3. **Edit Listing Form** - Wire the create form to edit flow
-4. **Advanced Filters** - Add date range and category filters to browse page
-5. **Authorization Checks** - Add role-based access control (deferred per requirements)
-6. **Performance Optimization** - Optimize queries and bundle size
-7. **Deployment** - Publish to production
+1. **Prompt 2:** Build Host Listing CRUD Flow - test with real test account
+2. **Performance Optimization** - Optimize queries and bundle size
+3. **Authorization Checks** - Add role-based access control
+4. **Deployment** - Publish to production
 
 ## ⚠️ Known Issues / Blockers
 
+### Prompt 1: "Failed to set up role" - FIXED ✅
+- **Root Cause:** RoleSelectionPage was accessible to unauthenticated users but called a protected procedure
+- **Fix Applied:** Moved RoleSelectionPage behind auth check in App.tsx routing
+- **Commit:** `40d8869` - Fix: Move RoleSelectionPage behind auth check
+- **Status:** RESOLVED - Users now must authenticate before accessing role selection
+
 ### GitHub Repository
 - **Status:** Repo created at https://github.com/studiourbanlayer-pixel/afterhours
-- **Action Required:** Generate new PAT with `repo` scope at https://github.com/settings/tokens
-- **Note:** Previous token had insufficient permissions
+- **Action:** Code pushed with PAT token
+- **Note:** All commits now on GitHub
 
 ### Stripe Integration
 - **Status:** Test mode only
-- **Action Required:** User to claim Stripe sandbox at https://dashboard.stripe.com/claim_sandbox/...
+- **Action Required:** User to claim Stripe sandbox
 - **Note:** Live keys pending after KYC verification
-
-### Image Upload
-- **Status:** Currently accepts URL only
-- **Action Required:** Implement S3 upload flow with presigned URLs
-- **Note:** Form structure ready, backend helpers exist
 
 ### Authorization
 - **Status:** Deferred per requirements
@@ -98,6 +102,7 @@
 - ✅ Mobile responsiveness: Verified at 375x812 viewport
 - ✅ Desktop responsiveness: Verified at 1280x720 viewport
 - ✅ Error handling: Toast notifications, validation, error boundaries
+- ✅ Auth routing: Fixed and tested
 - ⏳ Stripe webhook testing (manual with test events)
 - ⏳ End-to-end flow testing
 
@@ -109,10 +114,19 @@
 - ✅ Checkpoint saved: `7f614d6a` (Phase 1 complete)
 - ✅ Stripe webhook secret configured
 - ✅ Environment variables set
-- ⏳ GitHub push pending (waiting for token)
+- ✅ GitHub push complete
 - ⏳ Production deployment ready
 
 ## Session History
+
+### Session 2 (2026-07-14)
+- **FIXED Prompt 1:** "Failed to set up role" bug - moved RoleSelectionPage behind auth check
+- Added LoginPage with Manus OAuth integration
+- Added RoleSelectionPage with Host/Guest selection UI
+- Improved image upload: proper drag-and-drop, async handling, error states
+- Pushed all commits to GitHub
+- 4 new commits: login/role pages, image upload improvements, auth routing fix
+- **Demo URL:** https://3000-ixub8tkj1820zbxl11pxn-ec0a42f5.sg1.manus.computer
 
 ### Session 1 (2026-07-11)
 - Initialized project with web-db-user scaffold
@@ -127,5 +141,5 @@
 - Wired toast notifications into: onboarding, create listing, logout, browse page
 - Verified responsive layouts (mobile + desktop)
 - Saved checkpoint: `7f614d6a` (Phase 1 complete with error handling)
-- 8 commits with clear messages
+- 10 commits with clear messages
 - Created GitHub repo: https://github.com/studiourbanlayer-pixel/afterhours

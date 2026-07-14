@@ -54,4 +54,6 @@
 - [x] Responsive layout: bottom tabs (mobile), sidebar nav (desktop 1024px+)
 - [x] Error handling and edge cases (error utilities, toast notifications, validation, error boundaries)
 - [x] Toast notifications wired into: onboarding, create listing, logout, browse page errors
-- [ ] Performance optimization (bundle size, query optimization)
+- [x] Prompt 1: Fixed "Failed to set up role" bug - auth routing fixed
+- [x] Prompt 2: Host Listing CRUD Flow tested and working
+- [ ] Performance optimization (Phase 2 - bundle size, query optimization)

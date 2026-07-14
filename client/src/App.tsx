@@ -10,8 +10,15 @@ import CreateListing from "./pages/CreateListing";
 import EditListing from "./pages/EditListing";
 import ProfilePage from "./pages/ProfilePage";
 import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
 import RoleSelectionPage from "./pages/RoleSelectionPage";
+import GuestHome from "./pages/GuestHome";
+import HostHome from "./pages/HostHome";
+import BrowsePage from "./pages/BrowsePage";
+import GuestDashboard from "./pages/GuestDashboard";
+import HostDashboard from "./pages/HostDashboard";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LogOut, Home as HomeIcon, LayoutGrid, User } from "lucide-react";
 import { useIsMobile } from "@/hooks/useMobile";
@@ -111,11 +118,24 @@ function Router() {
   const isMobile = useIsMobile();
   const mainContentClass = isMobile ? "pb-20" : "ml-64";
 
-  // Show login page if not authenticated
-  if (!loading && !user) {
+  // Show loading state while checking auth
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show login/signup pages if not authenticated
+  if (!user) {
     return (
       <Switch>
-        <Route path={"/login"} component={LoginPage} />
+        <Route path={"/"} component={LoginPage} />
+        <Route path={"/signup"} component={SignupPage} />
         <Route component={LoginPage} />
       </Switch>
     );
@@ -127,9 +147,13 @@ function Router() {
       <div className={`flex-1 ${mainContentClass}`}>
         <Switch>
           <Route path={"/"} component={Home} />
-          <Route path={"/dashboard"} component={Home} />
           <Route path={"/role-selection"} component={RoleSelectionPage} />
-          <Route path={"/listings/:id"} component={({ params }) => <ListingDetail id={parseInt(params.id)} />} />
+          <Route path={"/guest"} component={GuestHome} />
+          <Route path={"/browse"} component={BrowsePage} />
+          <Route path={"/guest-dashboard"} component={GuestDashboard} />
+          <Route path={"/host"} component={HostHome} />
+          <Route path={"/host-dashboard"} component={HostDashboard} />
+          <Route path={"/listing/:id"} component={({ params }) => <ListingDetail id={parseInt(params.id)} />} />
           <Route path={"/create-listing"} component={CreateListing} />
           <Route path={"/edit-listing/:id"} component={({ params }) => <EditListing id={parseInt(params.id)} />} />
           <Route path={"/profile"} component={ProfilePage} />

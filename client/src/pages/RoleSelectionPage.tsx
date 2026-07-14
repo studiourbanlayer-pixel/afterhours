@@ -1,24 +1,63 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useLocation } from "wouter";
-import { Loader2, Users, Megaphone, ArrowLeft } from "lucide-react";
+import { Loader2, Users, Megaphone, ArrowLeft, AlertCircle } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { showSuccess, showError } from "@/lib/toast";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { useEffect, useState } from "react";
 
 export default function RoleSelectionPage() {
   const [, navigate] = useLocation();
+  const { user, loading: authLoading } = useAuth();
+  const [retryCount, setRetryCount] = useState(0);
   const setRoleMutation = trpc.profile.setRole.useMutation();
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate("/");
+    }
+  }, [authLoading, user, navigate]);
 
   const handleSelectRole = async (role: "host" | "guest") => {
     try {
+      // Add small delay to ensure session is fully established
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       await setRoleMutation.mutateAsync(role);
       showSuccess(`Welcome, ${role}!`);
+      setRetryCount(0);
       navigate("/");
-    } catch (error) {
-      showError("Failed to set role. Please try again.");
-      console.error(error);
+    } catch (error: any) {
+      console.error("Role setup error:", error);
+      
+      // Retry once if it's an auth error
+      if (error?.data?.code === "UNAUTHORIZED" && retryCount < 1) {
+        setRetryCount(retryCount + 1);
+        showError("Retrying role setup...");
+        // Retry after delay
+        setTimeout(() => handleSelectRole(role), 1000);
+      } else {
+        showError("Failed to set role. Please try again.");
+      }
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">

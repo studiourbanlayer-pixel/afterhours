@@ -57,3 +57,43 @@
 - [x] Prompt 1: Fixed "Failed to set up role" bug - auth routing fixed
 - [x] Prompt 2: Host Listing CRUD Flow tested and working
 - [ ] Performance optimization (Phase 2 - bundle size, query optimization)
+
+
+## Kimi Prompt - Auth Fix & Feature Additions
+
+### TASK 1: Fix Role Setup Bug
+- [ ] Debug "Failed to set up role" error when selecting Host/Guest
+- [ ] Check RLS policies on profiles table
+- [ ] Verify role enum values match (host/guest)
+- [ ] Test with real user account
+
+### TASK 2: Create Signup Page
+- [ ] Build signup form with email, password, confirm password
+- [ ] Add password validation (min 8 chars, complexity)
+- [ ] Route to role selection after signup
+- [ ] Integrate with Manus auth system
+
+### TASK 3: Guest Landing Page
+- [ ] Create guest home page with "Discover" tab
+- [ ] Show listings grid with title, image, date, price
+- [ ] Add "Discover" CTA button
+- [ ] Link to listing detail page
+
+### TASK 4: Host Landing Page
+- [ ] Create host home page with "My Listings" tab
+- [ ] Show host's listings with management options
+- [ ] Add "Host a Party" CTA button
+- [ ] Link to create listing page
+
+### TASK 5: High-Value Features
+- [ ] Profile settings page (edit name, email, preferences)
+- [ ] Favorites/wishlist feature for guests
+- [ ] Empty state messages on Discover page
+- [ ] User profile avatar/initials
+
+### TASK 6: Testing & Deployment
+- [ ] Test on mobile viewport (375px)
+- [ ] Verify all CTAs are visible and working
+- [ ] Test role selection flow end-to-end
+- [ ] Push all commits to GitHub
+- [ ] Update PROGRESS.md

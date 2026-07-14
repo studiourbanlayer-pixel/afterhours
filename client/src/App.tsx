@@ -116,7 +116,6 @@ function Router() {
     return (
       <Switch>
         <Route path={"/login"} component={LoginPage} />
-        <Route path={"/role-selection"} component={RoleSelectionPage} />
         <Route component={LoginPage} />
       </Switch>
     );
@@ -129,6 +128,7 @@ function Router() {
         <Switch>
           <Route path={"/"} component={Home} />
           <Route path={"/dashboard"} component={Home} />
+          <Route path={"/role-selection"} component={RoleSelectionPage} />
           <Route path={"/listings/:id"} component={({ params }) => <ListingDetail id={parseInt(params.id)} />} />
           <Route path={"/create-listing"} component={CreateListing} />
           <Route path={"/edit-listing/:id"} component={({ params }) => <EditListing id={parseInt(params.id)} />} />

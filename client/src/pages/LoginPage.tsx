@@ -1,10 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useLocation } from "wouter";
+import { startLogin } from "@/const";
 import { Ticket, ArrowRight } from "lucide-react";
 
 export default function LoginPage() {
-  const [, navigate] = useLocation();
+  const handleSignIn = () => {
+    startLogin();
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center px-4">
@@ -28,7 +30,7 @@ export default function LoginPage() {
 
             {/* Login Button */}
             <Button
-              onClick={() => navigate("/role-selection")}
+              onClick={handleSignIn}
               size="lg"
               className="w-full bg-blue-600 hover:bg-blue-700 text-white gap-2"
             >
@@ -50,7 +52,7 @@ export default function LoginPage() {
             <div className="text-center">
               <p className="text-gray-600 mb-4">Don't have an account?</p>
               <Button
-                onClick={() => navigate("/role-selection")}
+                onClick={handleSignIn}
                 variant="outline"
                 size="lg"
                 className="w-full"

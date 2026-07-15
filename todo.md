@@ -86,10 +86,10 @@
 - [x] Link to create listing page
 
 ### TASK 5: High-Value Features
-- [ ] Profile settings page (edit name, email, preferences)
-- [ ] Favorites/wishlist feature for guests
-- [ ] Empty state messages on Discover page (DONE in GuestHome)
-- [ ] User profile avatar/initials
+- [x] Profile settings page (edit name, email, preferences) - tabbed interface with Profile/Preferences/Account
+- [x] Empty state messages on Discover page (DONE in GuestHome)
+- [x] User profile avatar/initials (implemented in ProfilePage)
+- [ ] Favorites/wishlist feature for guests (deferred - can be added in Phase 2)
 
 ### TASK 6: Testing & Deployment
 - [ ] Test on mobile viewport (375px)

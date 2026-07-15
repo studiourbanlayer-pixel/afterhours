@@ -1,6 +1,6 @@
 # AfterHours Progress Tracker
 
-**Last Updated:** 2026-07-14 UTC
+**Last Updated:** 2026-07-15 UTC
 
 ## ✅ Completed Features
 
@@ -10,14 +10,17 @@
 - Profile creation and role persistence
 - Logout functionality
 - **NEW:** Login page with Manus OAuth
+- **NEW:** Signup page with Manus OAuth integration
 - **NEW:** Role selection page with Host/Guest UI
 - **FIXED:** Auth routing - RoleSelectionPage now behind auth check
+- **FIXED:** "Failed to set up role" bug - auth check and retry logic added
 
 ### Host Features
 - Create listing form (title, description, venue, date, capacity, price)
 - **NEW:** S3 image upload with drag-and-drop UI
 - **NEW:** Edit listing form with full S3 support
 - Listing soft-delete/cancel with status field
+- **NEW:** Host landing page (HostHome) with My Listings tab and Host a Party CTA
 - Host dashboard with listing management
 - Analytics: booking counts, revenue after 10% commission, event dates
 - Listing cancellation with UI integration
@@ -26,9 +29,18 @@
 - Browse page with grid/list layout
 - Free-text search on title and description
 - **NEW:** Advanced filters (date range, max price)
+- **NEW:** Guest landing page (GuestHome) with Discover tab and Discover CTA button
 - Listing detail page with full event information
 - Sticky booking summary (desktop two-column, mobile stacked)
 - Guest dashboard showing all bookings with event details
+
+### User Profile & Settings
+- **NEW:** Enhanced ProfilePage with tabbed interface
+- **NEW:** Profile tab: user info, name, email, account type, member since
+- **NEW:** Preferences tab: notification settings with toggles
+- **NEW:** Account tab: account status, last login, danger zone
+- **NEW:** User avatar with initials
+- Logout functionality
 
 ### Booking & Payments
 - Booking form with quantity selection
@@ -44,6 +56,7 @@
 - Desktop sidebar navigation (1024px+)
 - Responsive listing detail page
 - Profile page with user info and logout
+- **NEW:** Responsive guest/host landing pages
 
 ### Backend Infrastructure
 - tRPC procedures for all core features
@@ -54,13 +67,13 @@
 
 ## 🔧 In Progress
 
-- Prompt 2: Build Host Listing CRUD Flow (after Prompt 1 confirmed)
 - Performance optimization (Phase 2)
+- Favorites/wishlist feature (Phase 2)
 
 ## ⏭️ Next Steps
 
-1. **Prompt 2:** Build Host Listing CRUD Flow - test with real test account
-2. **Performance Optimization** - Optimize queries and bundle size
+1. **Performance Optimization** - Optimize queries and bundle size
+2. **Favorites/Wishlist** - Add guest wishlist feature
 3. **Authorization Checks** - Add role-based access control
 4. **Deployment** - Publish to production
 
@@ -72,10 +85,19 @@
 - **Commit:** `40d8869` - Fix: Move RoleSelectionPage behind auth check
 - **Status:** RESOLVED - Users now must authenticate before accessing role selection
 
+### Kimi Prompt: Auth Fix & Features - COMPLETED ✅
+- **TASK 1:** Fixed "Failed to set up role" bug with auth check and retry logic
+- **TASK 2:** Created signup page with Manus OAuth integration
+- **TASK 3:** Built guest landing page (GuestHome) with Discover tab, search, filters, empty states
+- **TASK 4:** Built host landing page (HostHome) with My Listings tab, Host a Party CTA, analytics
+- **TASK 5:** Enhanced ProfilePage with tabbed interface (Profile, Preferences, Account)
+- **TASK 6:** Tested on mobile (375x812), verified responsive design, pushed all commits
+- **Status:** RESOLVED - All Kimi prompt tasks completed
+
 ### GitHub Repository
 - **Status:** Repo created at https://github.com/studiourbanlayer-pixel/afterhours
-- **Action:** Code pushed with PAT token
-- **Note:** All commits now on GitHub
+- **Commits:** 4 new commits pushed (signup, guest/host landing, profile settings, todo updates)
+- **Note:** All code on GitHub with clear commit messages
 
 ### Stripe Integration
 - **Status:** Test mode only
@@ -95,6 +117,7 @@
 - Responsive breakpoints: `md` (768px) for tablet, `lg` (1024px) for desktop
 - Listing detail: stacked on mobile, two-column on desktop (1024px+)
 - All timestamps in UTC, stored as MySQL TIMESTAMP
+- Mobile-first approach: bottom tab navigation on mobile, desktop sidebar on 1024px+
 
 ## Testing Status
 
@@ -103,21 +126,37 @@
 - ✅ Desktop responsiveness: Verified at 1280x720 viewport
 - ✅ Error handling: Toast notifications, validation, error boundaries
 - ✅ Auth routing: Fixed and tested
+- ✅ Role selection flow: Fixed and verified
+- ✅ Guest landing page: Tested with search and filters
+- ✅ Host landing page: Tested with listing management
+- ✅ Profile settings: Tested with tabbed interface
 - ⏳ Stripe webhook testing (manual with test events)
-- ⏳ End-to-end flow testing
+- ⏳ End-to-end booking flow testing
 
 ## Deployment Readiness
 
 - ✅ Dev server running and stable
 - ✅ TypeScript compilation clean
 - ✅ No build errors
-- ✅ Checkpoint saved: `7f614d6a` (Phase 1 complete)
+- ✅ Checkpoint saved: `1915eeec` (Kimi prompt complete)
 - ✅ Stripe webhook secret configured
 - ✅ Environment variables set
-- ✅ GitHub push complete
+- ✅ GitHub push complete with 4 new commits
+- ✅ Mobile responsive design verified
 - ⏳ Production deployment ready
 
 ## Session History
+
+### Session 3 (2026-07-15) - Kimi Prompt Completion
+- **FIXED:** "Failed to set up role" bug with auth check and retry logic
+- **CREATED:** Signup page with Manus OAuth integration
+- **CREATED:** Guest landing page (GuestHome) with Discover tab, search, filters, empty states
+- **CREATED:** Host landing page (HostHome) with My Listings tab, Host a Party CTA, analytics
+- **ENHANCED:** ProfilePage with tabbed interface (Profile, Preferences, Account sections)
+- **TESTED:** Mobile responsiveness at 375x812 viewport
+- **PUSHED:** 4 commits to GitHub
+- **CHECKPOINT:** `1915eeec` - Kimi prompt complete
+- **Demo URL:** https://3000-ixub8tkj1820zbxl11pxn-ec0a42f5.sg1.manus.computer
 
 ### Session 2 (2026-07-14)
 - **FIXED Prompt 1:** "Failed to set up role" bug - moved RoleSelectionPage behind auth check

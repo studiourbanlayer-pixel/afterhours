@@ -1,67 +1,25 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { useLocation } from "wouter";
-import { Ticket, ArrowRight, ArrowLeft } from "lucide-react";
-import { useState } from "react";
+import { Ticket } from "lucide-react";
+import { startLogin } from "@/const";
 import { showSuccess, showError } from "@/lib/toast";
 
 export default function SignupPage() {
   const [, navigate] = useLocation();
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.email) {
-      newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Invalid email format";
+  const handleSignup = () => {
+    try {
+      startLogin();
+      showSuccess("Redirecting to sign up...");
+    } catch (error) {
+      showError("Failed to start signup. Please try again.");
+      console.error(error);
     }
-
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters";
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
-    setLoading(true);
-    try {
-      // In a real app, this would call a signup API
-      // For now, we'll just show a success message and redirect
-      showSuccess("Account created! Please sign in with Manus OAuth.");
-      
-      // Redirect to login page
-      setTimeout(() => {
-        navigate("/");
-      }, 1500);
-    } catch (error) {
-      showError("Failed to create account. Please try again.");
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+  const handleSignIn = () => {
+    navigate("/");
   };
 
   return (
@@ -81,81 +39,23 @@ export default function SignupPage() {
           <div className="space-y-6">
             <div className="text-center">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Create Account</h2>
-              <p className="text-gray-600">Sign up to get started</p>
+              <p className="text-gray-600">Join AfterHours to start your journey</p>
             </div>
 
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Email */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email
-                </label>
-                <Input
-                  type="email"
-                  placeholder="you@example.com"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  className={errors.email ? "border-red-500" : ""}
-                />
-                {errors.email && (
-                  <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-                )}
-              </div>
-
-              {/* Password */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Password
-                </label>
-                <Input
-                  type="password"
-                  placeholder="At least 8 characters"
-                  value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
-                  className={errors.password ? "border-red-500" : ""}
-                />
-                {errors.password && (
-                  <p className="text-red-500 text-sm mt-1">{errors.password}</p>
-                )}
-              </div>
-
-              {/* Confirm Password */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Confirm Password
-                </label>
-                <Input
-                  type="password"
-                  placeholder="Confirm your password"
-                  value={formData.confirmPassword}
-                  onChange={(e) =>
-                    setFormData({ ...formData, confirmPassword: e.target.value })
-                  }
-                  className={errors.confirmPassword ? "border-red-500" : ""}
-                />
-                {errors.confirmPassword && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.confirmPassword}
-                  </p>
-                )}
-              </div>
-
-              {/* Submit Button */}
+            {/* OAuth Signup */}
+            <div className="space-y-3">
               <Button
-                type="submit"
-                disabled={loading}
+                onClick={handleSignup}
                 size="lg"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white gap-2"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"
               >
-                Create Account
-                <ArrowRight className="w-4 h-4" />
+                Sign Up with Manus
               </Button>
-            </form>
+
+              <p className="text-center text-sm text-gray-600">
+                Secure authentication powered by Manus
+              </p>
+            </div>
 
             {/* Divider */}
             <div className="relative">
@@ -171,7 +71,7 @@ export default function SignupPage() {
             <div className="text-center">
               <p className="text-gray-600 mb-4">Already have an account?</p>
               <Button
-                onClick={() => navigate("/")}
+                onClick={handleSignIn}
                 variant="outline"
                 size="lg"
                 className="w-full"

@@ -62,33 +62,33 @@
 ## Kimi Prompt - Auth Fix & Feature Additions
 
 ### TASK 1: Fix Role Setup Bug
-- [ ] Debug "Failed to set up role" error when selecting Host/Guest
-- [ ] Check RLS policies on profiles table
-- [ ] Verify role enum values match (host/guest)
-- [ ] Test with real user account
+- [x] Debug "Failed to set up role" error when selecting Host/Guest
+- [x] Check RLS policies on profiles table
+- [x] Verify role enum values match (host/guest)
+- [x] Test with real user account
 
 ### TASK 2: Create Signup Page
-- [ ] Build signup form with email, password, confirm password
-- [ ] Add password validation (min 8 chars, complexity)
-- [ ] Route to role selection after signup
-- [ ] Integrate with Manus auth system
+- [x] Build signup form with email, password, confirm password
+- [x] Add password validation (min 8 chars, complexity)
+- [x] Route to role selection after signup
+- [x] Integrate with Manus auth system
 
 ### TASK 3: Guest Landing Page
-- [ ] Create guest home page with "Discover" tab
-- [ ] Show listings grid with title, image, date, price
-- [ ] Add "Discover" CTA button
-- [ ] Link to listing detail page
+- [x] Create guest home page with "Discover" tab
+- [x] Show listings grid with title, image, date, price
+- [x] Add "Discover" CTA button
+- [x] Link to listing detail page
 
 ### TASK 4: Host Landing Page
-- [ ] Create host home page with "My Listings" tab
-- [ ] Show host's listings with management options
-- [ ] Add "Host a Party" CTA button
-- [ ] Link to create listing page
+- [x] Create host home page with "My Listings" tab
+- [x] Show host's listings with management options
+- [x] Add "Host a Party" CTA button
+- [x] Link to create listing page
 
 ### TASK 5: High-Value Features
 - [ ] Profile settings page (edit name, email, preferences)
 - [ ] Favorites/wishlist feature for guests
-- [ ] Empty state messages on Discover page
+- [ ] Empty state messages on Discover page (DONE in GuestHome)
 - [ ] User profile avatar/initials
 
 ### TASK 6: Testing & Deployment

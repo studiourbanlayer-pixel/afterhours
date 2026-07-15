@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useLocation } from "wouter";
-import { Plus, Megaphone, Calendar, Users, TrendingUp } from "lucide-react";
+import { Plus, Megaphone, Calendar, Users, TrendingUp, ArrowRight } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
 export default function HostHome() {
@@ -52,10 +52,10 @@ export default function HostHome() {
             <Button
               onClick={handleCreateListing}
               size="lg"
-              className="bg-white text-indigo-600 hover:bg-gray-100 gap-2 font-semibold"
+              className="bg-white text-indigo-600 hover:bg-gray-100 gap-2 font-semibold whitespace-nowrap"
             >
-              <Plus className="w-5 h-5" />
-              Create Event
+              Host a Party
+              <ArrowRight className="w-4 h-4" />
             </Button>
           </div>
         </div>
@@ -203,7 +203,7 @@ export default function HostHome() {
               className="bg-indigo-600 hover:bg-indigo-700 gap-2"
             >
               <Plus className="w-5 h-5" />
-              Create Event
+              Host a Party
             </Button>
           </div>
         )}

@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useLocation } from "wouter";
-import { Search, MapPin, Calendar, Ticket, Sparkles } from "lucide-react";
+import { Search, MapPin, Calendar, Ticket, Sparkles, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 
@@ -24,6 +24,12 @@ export default function GuestHome() {
 
   const handleListingClick = (id: number) => {
     navigate(`/listing/${id}`);
+  };
+
+  const handleDiscover = () => {
+    // Scroll to listings or just ensure they're visible
+    const element = document.getElementById("listings-grid");
+    element?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -61,6 +67,14 @@ export default function GuestHome() {
                 className="h-12"
               />
             </div>
+            <Button
+              onClick={handleDiscover}
+              size="lg"
+              className="bg-white text-blue-600 hover:bg-gray-100 font-semibold gap-2 whitespace-nowrap"
+            >
+              Discover
+              <ArrowRight className="w-4 h-4" />
+            </Button>
           </div>
         </div>
       </div>
@@ -78,76 +92,78 @@ export default function GuestHome() {
         </div>
 
         {/* Listings Grid */}
-        {isLoading ? (
-          <div className="text-center py-12">
-            <p className="text-gray-600">Loading events...</p>
-          </div>
-        ) : listings.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {listings?.map((listing: any) => (
-              <Card
-                key={listing.id}
-                className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-                onClick={() => handleListingClick(Number(listing.id))}
-              >
-                {/* Image */}
-                {listing.coverImageUrl && (
-                  <div className="h-48 bg-gradient-to-br from-blue-400 to-indigo-600 overflow-hidden">
-                    <img
-                      src={listing.coverImageUrl}
-                      alt={listing.title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-
-                {/* Content */}
-                <div className="p-4">
-                  <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-2">
-                    {listing.title}
-                  </h3>
-
-                  {/* Details */}
-                  <div className="space-y-2 mb-4 text-sm text-gray-600">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4" />
-                      <span>
-                        {new Date(listing.eventDate).toLocaleDateString()}
-                      </span>
+        <div id="listings-grid">
+          {isLoading ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600">Loading events...</p>
+            </div>
+          ) : listings.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {listings?.map((listing: any) => (
+                <Card
+                  key={listing.id}
+                  className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                  onClick={() => handleListingClick(Number(listing.id))}
+                >
+                  {/* Image */}
+                  {listing.coverImageUrl && (
+                    <div className="h-48 bg-gradient-to-br from-blue-400 to-indigo-600 overflow-hidden">
+                      <img
+                        src={listing.coverImageUrl}
+                        alt={listing.title}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="w-4 h-4" />
-                      <span className="line-clamp-1">{listing.venueAddress}</span>
-                    </div>
-                  </div>
+                  )}
 
-                  {/* Footer */}
-                  <div className="flex items-center justify-between pt-4 border-t">
-                    <div>
-                      <p className="text-xs text-gray-500">Price per ticket</p>
-                      <p className="text-lg font-bold text-blue-600">
-                        ${(listing.ticketPriceCents / 100).toFixed(2)}
-                      </p>
+                  {/* Content */}
+                  <div className="p-4">
+                    <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-2">
+                      {listing.title}
+                    </h3>
+
+                    {/* Details */}
+                    <div className="space-y-2 mb-4 text-sm text-gray-600">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4" />
+                        <span>
+                          {new Date(listing.eventDate).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4" />
+                        <span className="line-clamp-1">{listing.venueAddress}</span>
+                      </div>
                     </div>
-                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                      Book Now
-                    </Button>
+
+                    {/* Footer */}
+                    <div className="flex items-center justify-between pt-4 border-t">
+                      <div>
+                        <p className="text-xs text-gray-500">Price per ticket</p>
+                        <p className="text-lg font-bold text-blue-600">
+                          ${(listing.ticketPriceCents / 100).toFixed(2)}
+                        </p>
+                      </div>
+                      <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                        Book Now
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-16">
-            <Ticket className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              No events found
-            </h3>
-            <p className="text-gray-600">
-              Try adjusting your search or filters to find more events
-            </p>
-          </div>
-        )}
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16">
+              <Ticket className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                No events found
+              </h3>
+              <p className="text-gray-600">
+                Try adjusting your search or filters to find more events
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
